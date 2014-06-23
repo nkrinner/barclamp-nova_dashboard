@@ -142,7 +142,7 @@ elsif node[:nova_dashboard][:sql_engine] == "sqlite"
       'ENGINE' => "'django.db.backends.sqlite3'",
       'NAME' => "os.path.join(LOCAL_PATH, 'dashboard_openstack.sqlite3')"
     }
-    
+
     file "/etc/openstack-dashboard/dashboard_openstack.sqlite3" do
         action :touch
         user "www-data"
@@ -174,6 +174,7 @@ execute "python manage.py syncdb" do
   notifies :restart, resources(:service => "apache2"), :immediately
 end
 
+can_set_password = "#{node["nova_dashboard"]["can_set_password"]}"
 # Need to template the "EXTERNAL_MONITORING" array
 template "/etc/openstack-dashboard/local_settings.py" do
   source "local_settings.py.erb"
@@ -184,6 +185,7 @@ template "/etc/openstack-dashboard/local_settings.py" do
     :keystone_address => keystone_address,
     :keystone_service_port => keystone_service_port,
     :db_settings => db_settings
+    :can_set_password => can_set_password
   )
   notifies :run, resources(:execute => "python manage.py syncdb"), :immediately
   action :create
@@ -191,4 +193,3 @@ end
 
 node[:nova_dashboard][:monitor][:svcs] <<["nova_dashboard-server"]
 node.save
-

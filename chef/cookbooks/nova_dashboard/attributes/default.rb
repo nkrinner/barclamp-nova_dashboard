@@ -20,6 +20,9 @@ default[:dashboard][:db][:password] = "" # Set by Recipe
 override[:nova_dashboard][:user]="nova_dashboard"
 default[:nova_dashboard][:site_branding] = "Openstack Nova Dashboard"
 
+# Display option to set a server admin password via Nova
+default["nova_dashboard"]["can_set_password"] = False
+
 # declare what needs to be monitored
 node.set[:nova_dashboard][:monitor]={}
 node.set[:nova_dashboard][:monitor][:svcs] = []
